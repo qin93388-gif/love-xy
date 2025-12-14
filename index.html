@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit-cover">
+  <title>❤️xiao yu❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe6f2 50%, #ffd9e8 100%);
+      color: #1a1a1a;
+      font-family: "Noto Sans SC", Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #popup-layer {
+      position: fixed;
+      inset: 0;
+    }
+    /* 入场弹窗 */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: grid;
+      place-items: center;
+      z-index: 9999;
+    }
+    .modal {
+      width: min(92vw, 400px);
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.16);
+      text-align: left;
+      overflow: hidden;
+      animation: modal-appear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .modal .titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: #f8f8f8;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .modal .titlebar .icon { font-size: 24px; }
+    .modal .titlebar .title { font-weight: 700; font-size: 18px; }
+    .modal .content { padding: 20px 16px; color: #666; text-align: center; }
+    .modal .actions { padding: 0 16px 20px; display: flex; justify-content: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 28px;
+      border-radius: 22px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      background: #ff3366;
+      color: #fff;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 16px rgba(255, 51, 102, 0.3);
+    }
+    .btn:active { transform: translateY(0); }
+    
+    /* 弹窗样式 */
+    .popup {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff3366, #ff6699);
+      border: 3px solid #ffffff;
+      box-shadow: 0 8px 20px rgba(255, 51, 102, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      z-index: 1;
+      animation: popup-appear 0.5s ease-out forwards;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .popup:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 28px rgba(255, 51, 102, 0.5);
+    }
+    
+    .popup .content {
+      color: white;
+      font-size: 28px;
+      text-align: center;
+    }
+    
+    /* 不同颜色的弹窗 */
+    .popup.red { background: linear-gradient(135deg, #ff3366, #ff6699); }
+    .popup.pink { background: linear-gradient(135deg, #ff66b2, #ff99cc); }
+    .popup.rose { background: linear-gradient(135deg, #ff3385, #ff66a3); }
+    .popup.hotpink { background: linear-gradient(135deg, #ff3399, #ff66bb); }
+    
+    /* 动画效果 */
+    @keyframes modal-appear {
+      0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    @keyframes popup-appear {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-30deg);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(1.05) rotate(5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    /* 点击消失动画 */
+    @keyframes popup-disappear {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      30% {
+        opacity: 0.8;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+    
+    .popup.disappearing {
+      animation: popup-disappear 0.4s ease-in forwards;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="modal-backdrop" id="start-backdrop">
+      <div class="modal">
+        <div class="titlebar">
+          <span class="icon">❤️</span>
+          <span class="title">🥰</span>
+        </div>
+        <div class="content">这是一份特别的礼物 小宝~</div>
+        <div class="actions">
+          <button class="btn" id="confirm-btn" autofocus>确定</button>
+        </div>
+      </div>
+    </div>
+    <div id="popup-layer"></div>
+  </div>
+  <audio id="bgMusic" preload="auto">
+    <source src="https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7538982702662699786.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+    // 生成爱心坐标点
+    function generateHeartPoints() {
+      const points = [];
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      
+      const popupSize = 56;
+      const padding = 60;
+      const availableWidth = windowWidth - padding * 2;
+      const availableHeight = windowHeight - padding * 2;
+      
+      const heartScale = Math.min(availableWidth / 30, availableHeight / 24, 14);
+      
+      const centerX = windowWidth / 2;
+      const centerY = windowHeight / 2;
+      
+      const step = 0.04; // 减小步长，增加点数
+      for (let t = 0; t <= 2 * Math.PI; t += step) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        
+        const scaledX = centerX + x * heartScale;
+        const scaledY = centerY + y * heartScale;
+        
+        if (
+          scaledX >= popupSize/2 && 
+          scaledX <= windowWidth - popupSize/2 &&
+          scaledY >= popupSize/2 && 
+          scaledY <= windowHeight - popupSize/2
+        ) {
+          points.push({
+            x: scaledX,
+            y: scaledY
+          });
+        }
+      }
+      
+      return points;
+    }
+
+    // 配置
+    const config = {
+      popupTexts: ['❤️', '💕', '💖', '💗', '💓', '💞', '💘'],
+      popupClasses: ['red', 'pink', 'rose', 'hotpink'],
+      popupDelay: 80 // 加快到80ms每个
+    };
+
+    // 工具函数
+    const utils = {
+      randomPick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+    };
+
+    // 初始化
+    function init() {
+      const confirmBtn = document.getElementById('confirm-btn');
+      const startBackdrop = document.getElementById('start-backdrop');
+      const bgMusic = document.getElementById('bgMusic');
+
+      confirmBtn.addEventListener('click', () => {
+        startBackdrop.style.display = 'none';
+        
+        bgMusic.volume = 0.6;
+        bgMusic.play().catch(() => {});
+        
+        const heartPoints = generateHeartPoints();
+        createHeartPopup(heartPoints);
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          confirmBtn.click();
+        }
+      });
+    }
+
+    // 创建爱心弹窗
+    function createHeartPopup(points) {
+      const popupLayer = document.getElementById('popup-layer');
+      popupLayer.innerHTML = '';
+      
+      points.forEach((point, index) => {
+        setTimeout(() => {
+          const popup = document.createElement('div');
+          const colorClass = utils.randomPick(config.popupClasses);
+          const text = utils.randomPick(config.popupTexts);
+          const popupSize = 56;
+          
+          popup.className = `popup ${colorClass}`;
+          popup.style.left = `${point.x - popupSize/2}px`;
+          popup.style.top = `${point.y - popupSize/2}px`;
+          
+          popup.innerHTML = `<div class="content">${text}</div>`;
+          
+          // 点击消失效果
+          popup.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            this.classList.add('disappearing');
+            setTimeout(() => {
+              if (this.parentNode) {
+                this.parentNode.removeChild(this);
+              }
+            }, 400);
+          });
+          
+          // 移动端点击处理
+          popup.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+          }, { passive: false });
+          
+          popupLayer.appendChild(popup);
+        }, index * config.popupDelay);
+      });
+    }
+
+    // 页面加载完成后初始化
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
